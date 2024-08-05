@@ -3,6 +3,8 @@
     import { goto } from '$app/navigation';
     import type { Car } from '$lib/cars';
     import { onDestroy } from 'svelte';
+    import { notify } from '$lib/notificationStore';
+    import Notification from '$lib/Notification.svelte';
 
     let carList: Car[] = [];
 
@@ -19,7 +21,13 @@
             goto(`/editCar/${carId}`);
         } else if (action === 'delete') {
             if (confirm('Are you sure you want to delete this car?')) {
-                cars.update(carList => carList.filter(car => car.id !== carId));
+                cars.update(carList => {
+                    const updatedList = carList.filter(car => car.id !== carId);
+                    if (updatedList.length < carList.length) {
+                        notify('Car deleted successfully!');
+                    }
+                    return updatedList;
+                });
             }
         }
         // Reset the dropdown after action
@@ -37,11 +45,16 @@
         goto('/addCar');
     }
 </script>
+
   
+<Notification />
+
 <div class="header">
     <h1 class="title">Cars</h1>
     <button class="add-car" on:click={handleAdd}>Add Car</button>
 </div>
+
+
   
 {#if carList.length > 0}
     <table>

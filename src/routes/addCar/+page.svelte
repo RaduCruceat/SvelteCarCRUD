@@ -2,6 +2,7 @@
   import { cars } from '$lib/store';
   import { goto } from '$app/navigation';
   import type { Car } from '$lib/cars';
+  import { notify } from '$lib/notificationStore';
 
   let marca = '';
   let model = '';
@@ -61,6 +62,7 @@
       };
 
       cars.update(carList => [...carList, newCar]); // Update the store with the new car
+      notify('Car added successfully!');
       goto('/cars');
     }
   }

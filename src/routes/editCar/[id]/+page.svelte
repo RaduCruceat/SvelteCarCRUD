@@ -3,7 +3,8 @@
   import { goto } from '$app/navigation';
   import type { Car } from '$lib/cars';
   import { onMount } from 'svelte';
-
+  import { notify } from '$lib/notificationStore';
+  
   let car: Car | undefined;
   let id: number;
 
@@ -67,6 +68,7 @@
         }
         return carList; // Return the updated list
       });
+      notify('Car updated successfully!');
       goto('/cars');
     } else {
       // Handle the case where car is not found or validation fails
