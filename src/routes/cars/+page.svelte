@@ -16,89 +16,105 @@
         unsubscribe();
     });
   
-    function handleDelete(id: number) {
-        cars.update(carList => carList.filter(car => car.id !== id));
+    function handleAction(carId: number, action: string, selectElement: HTMLSelectElement) {
+        if (action === 'edit') {
+            goto(`/editCar/${carId}`);
+        } else if (action === 'delete') {
+            cars.update(carList => carList.filter(car => car.id !== carId));
+        }
+        // Reset the dropdown after action
+        selectElement.selectedIndex = 0;
     }
-  
-    function handleEdit(id: number) {
-        goto(`/editCar/${id}`);
+
+    function handleSelectChange(event: Event, carId: number) {
+        const selectElement = event.target as HTMLSelectElement;
+        if (selectElement) {
+            handleAction(carId, selectElement.value, selectElement);
+        }
     }
   
     function handleAdd() {
         goto('/addCar');
     }
-  </script>
+</script>
   
-  <div class="header">
+<div class="header">
     <h1 class="title">Cars</h1>
     <button class="add-car" on:click={handleAdd}>Add Car</button>
-  </div>
+</div>
   
-  {#if carList.length > 0}
+{#if carList.length > 0}
     <table>
-      <thead>
-        <tr>
-          <th>Marca</th>
-          <th>Model</th>
-          <th>Motor</th>
-          <th>Year</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {#each carList as car}
-          <tr>
-            <td>{car.marca}</td>
-            <td>{car.model}</td>
-            <td>{car.motor}</td>
-            <td>{car.an}</td>
-            <td>
-              <button on:click={() => handleEdit(car.id)}>Edit</button>
-              <button on:click={() => handleDelete(car.id)}>Delete</button>
-            </td>
-          </tr>
-        {/each}
-      </tbody>
+        <thead>
+            <tr>
+                <th>Marca</th>
+                <th>Model</th>
+                <th>Motor</th>
+                <th>Year</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {#each carList as car}
+                <tr>
+                    <td>{car.marca}</td>
+                    <td>{car.model}</td>
+                    <td>{car.motor}</td>
+                    <td>{car.an}</td>
+                    <td>
+                        <select on:change={(e) => handleSelectChange(e, car.id)}>
+                            <option value="" disabled selected>Select action</option>
+                            <option value="edit">Edit</option>
+                            <option value="delete">Delete</option>
+                        </select>
+                    </td>
+                </tr>
+            {/each}
+        </tbody>
     </table>
-  {:else}
+{:else}
     <p>No cars available.</p>
-  {/if}
+{/if}
   
-  <style>
+<style>
     .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start; /* Align items at the start of the flex container */
-      margin-bottom: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start; /* Align items at the start of the flex container */
+        margin-bottom: 16px;
     }
   
     .title {
-      margin: 0;
-      flex: 1;
-      text-align: center;
+        margin: 0;
+        flex: 1;
+        text-align: center;
     }
   
     .add-car {
-      align-self: flex-end; /* Align the button to the bottom of the flex container */
+        align-self: flex-end; /* Align the button to the bottom of the flex container */
     }
   
     table {
-      width: 100%;
-      border-collapse: collapse;
+        width: 100%;
+        border-collapse: collapse;
     }
   
     th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: left;
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
     }
   
     th {
-      background-color: #f2f2f2;
+        background-color: #f2f2f2;
     }
   
     tr:nth-child(even) {
-      background-color: #f9f9f9;
+        background-color: #f9f9f9;
     }
-  </style>
   
+    select {
+        border: 1px solid #ddd;
+        padding: 4px;
+    }
+</style>
