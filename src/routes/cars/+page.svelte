@@ -1,26 +1,26 @@
 <script lang="ts">
-    import { cars } from '$lib/store'; // Import the writable store
+    import { cars } from '$lib/store';
     import { goto } from '$app/navigation';
     import type { Car } from '$lib/cars';
-  
+    import { onDestroy } from 'svelte';
+
     let carList: Car[] = [];
-  
-    // Subscribe to the cars store
+
     const unsubscribe = cars.subscribe(value => {
         carList = value;
     });
-  
-    // Clean up the subscription when the component is destroyed
-    import { onDestroy } from 'svelte';
+
     onDestroy(() => {
         unsubscribe();
     });
-  
+
     function handleAction(carId: number, action: string, selectElement: HTMLSelectElement) {
         if (action === 'edit') {
             goto(`/editCar/${carId}`);
         } else if (action === 'delete') {
-            cars.update(carList => carList.filter(car => car.id !== carId));
+            if (confirm('Are you sure you want to delete this car?')) {
+                cars.update(carList => carList.filter(car => car.id !== carId));
+            }
         }
         // Reset the dropdown after action
         selectElement.selectedIndex = 0;
@@ -32,7 +32,7 @@
             handleAction(carId, selectElement.value, selectElement);
         }
     }
-  
+
     function handleAdd() {
         goto('/addCar');
     }
